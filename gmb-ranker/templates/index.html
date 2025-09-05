@@ -56,6 +56,16 @@
                             <input type="text" class="form-control" id="proxy-server" placeholder="e.g., http://proxy.example.com:8080">
                             <div class="form-text">Optional. URL of the HTTP/HTTPS proxy server.</div>
                         </div>
+                        <div class="mb-3">
+                            <label for="user-agent" class="form-label">User Agent</label>
+                            <select class="form-select" id="user-agent">
+                                <option selected value="">Default (Browser's User Agent)</option>
+                                <option value="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36">Chrome (Windows)</option>
+                                <option value="Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:107.0) Gecko/20100101 Firefox/107.0">Firefox (Mac)</option>
+                                <option value="Mozilla/5.0 (iPhone; CPU iPhone OS 16_1_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.1 Mobile/15E148 Safari/604.1">Safari (iPhone)</option>
+                            </select>
+                            <div class="form-text">The User Agent to simulate.</div>
+                        </div>
                         <!-- More configuration options will be added here -->
                     </form>
                 </div>
@@ -89,12 +99,14 @@
         document.getElementById('start-simulation-btn').addEventListener('click', () => {
             const searchTerm = document.getElementById('search-term').value;
             const proxyServer = document.getElementById('proxy-server').value;
+            const userAgent = document.getElementById('user-agent').value;
 
-            console.log(`Starting simulation with search term: '${searchTerm}' and proxy: '${proxyServer}'`);
+            console.log(`Starting simulation with search term: '${searchTerm}', proxy: '${proxyServer}', user agent: '${userAgent}'`);
 
             let payload = {
                 'search_term': searchTerm,
-                'proxy_server': proxyServer
+                'proxy_server': proxyServer,
+                'user_agent': userAgent
             };
 
             fetch('/run-simulation', {

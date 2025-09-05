@@ -1,18 +1,19 @@
 from flask import Flask, render_template, request
-from playwright.sync_api import sync_playwright
+from playwright.sync_api import sync_playwright, TimeoutError
 import threading
 
 app = Flask(__name__)
 
 # Keep the original simulation function
-def run_simulation(search_term="", proxy_server=None):
+def run_simulation(search_term="", proxy_server=None, user_agent=None):
     """
     Launches a browser, navigates to Google, and performs a search.
     Args:
         search_term (str): The term to search for.
         proxy_server (str, optional): The URL of the proxy server. Defaults to None.
+        user_agent (str, optional): The user agent to use. Defaults to None.
     """
-    print(f"Simulation started for search term: '{search_term}' with proxy: '{proxy_server}'")
+    print(f"Simulation started for term: '{search_term}', proxy: '{proxy_server}', user_agent: '{user_agent}'")
     try:
         with sync_playwright() as p:
             launch_options = {
@@ -25,16 +26,42 @@ def run_simulation(search_term="", proxy_server=None):
                 }
 
             browser = p.chromium.launch(**launch_options)
-            page = browser.new_page()
+
+            # Create a new browser context with the specified user agent
+            context_options = {}
+            if user_agent:
+                context_options['user_agent'] = user_agent
+
+            context = browser.new_context(**context_options)
+            page = context.new_page()
+
             page.goto("https://www.google.com")
 
-            search_bar = page.query_selector('textarea[name="q"]')
-            if search_bar:
+            # Handle potential cookie consent form
+            try:
+                print("Checking for cookie consent button...")
+                accept_button = page.locator('button:has-text("Accept all")')
+                accept_button.click(timeout=3000)
+                print("Cookie consent button clicked.")
+            except TimeoutError:
+                print("Cookie consent button not found or timed out, continuing...")
+
+            try:
+                # Based on debug HTML, the correct selector is input[name="q"]
+                search_bar_selector = 'input[name="q"]'
+                search_bar = page.wait_for_selector(search_bar_selector, timeout=5000)
                 search_bar.fill(search_term)
-                page.press('textarea[name="q"]', 'Enter')
+                page.press(search_bar_selector, 'Enter')
                 print(f"Search submitted for '{search_term}'.")
-            else:
-                print("Search bar not found.")
+            except TimeoutError:
+                print("Search bar not found within the timeout period.")
+                try:
+                    html_content = page.content()
+                    with open("debug_page.html", "w", encoding="utf-8") as f:
+                        f.write(html_content)
+                    print("Saved failing page HTML to debug_page.html")
+                except Exception as e:
+                    print(f"Could not save debug HTML: {e}")
                 browser.close()
                 return
 
@@ -57,12 +84,13 @@ def start_simulation_route():
     """Triggers the simulation in a background thread."""
     data = request.get_json()
     search_term = data.get('search_term', 'Default Search Term')
-    proxy_server = data.get('proxy_server', None) # Get the proxy server, default to None
+    proxy_server = data.get('proxy_server', None)
+    user_agent = data.get('user_agent', None) # Get the user agent, default to None
 
-    print(f"Received request to start simulation with term: '{search_term}' and proxy: '{proxy_server}'")
+    print(f"Received request to start simulation with term: '{search_term}', proxy: '{proxy_server}', user_agent: '{user_agent}'")
 
-    # Pass both arguments to the simulation function
-    simulation_thread = threading.Thread(target=run_simulation, args=(search_term, proxy_server))
+    # Pass all arguments to the simulation function
+    simulation_thread = threading.Thread(target=run_simulation, args=(search_term, proxy_server, user_agent))
     simulation_thread.start()
 
     return f"Simulation started for '{search_term}'!"

@@ -8,9 +8,9 @@
  * Restarting with stat
  * Debugger is active!
  * Debugger PIN: 311-540-975
-Received request to start simulation with term: 'Test with proxy' and proxy: 'http://127.0.0.1:12345'
-Simulation started for search term: 'Test with proxy' with proxy: 'http://127.0.0.1:12345'
-127.0.0.1 - - [05/Sep/2025 22:46:57] "POST /run-simulation HTTP/1.1" 200 -
+Received request to start simulation with term: 'Comprehensive Test', proxy: 'http://127.0.0.1:12345', user_agent: 'Mozilla/5.0 (Comprehensive Test Environment)'
+Simulation started for term: 'Comprehensive Test', proxy: 'http://127.0.0.1:12345', user_agent: 'Mozilla/5.0 (Comprehensive Test Environment)'
+127.0.0.1 - - [05/Sep/2025 23:17:45] "POST /run-simulation HTTP/1.1" 200 -
 An error occurred during simulation: Page.goto: net::ERR_PROXY_CONNECTION_FAILED at https://www.google.com/
 Call log:
   - navigating to "https://www.google.com/", waiting until "load"
