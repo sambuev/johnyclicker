@@ -5,16 +5,26 @@ import threading
 app = Flask(__name__)
 
 # Keep the original simulation function
-def run_simulation(search_term=""):
+def run_simulation(search_term="", proxy_server=None):
     """
     Launches a browser, navigates to Google, and performs a search.
     Args:
         search_term (str): The term to search for.
+        proxy_server (str, optional): The URL of the proxy server. Defaults to None.
     """
-    print(f"Simulation started for search term: '{search_term}'")
+    print(f"Simulation started for search term: '{search_term}' with proxy: '{proxy_server}'")
     try:
         with sync_playwright() as p:
-            browser = p.chromium.launch(headless=True, args=['--no-sandbox'])
+            launch_options = {
+                'headless': True,
+                'args': ['--no-sandbox']
+            }
+            if proxy_server:
+                launch_options['proxy'] = {
+                    'server': proxy_server
+                }
+
+            browser = p.chromium.launch(**launch_options)
             page = browser.new_page()
             page.goto("https://www.google.com")
 
@@ -47,11 +57,12 @@ def start_simulation_route():
     """Triggers the simulation in a background thread."""
     data = request.get_json()
     search_term = data.get('search_term', 'Default Search Term')
+    proxy_server = data.get('proxy_server', None) # Get the proxy server, default to None
 
-    print(f"Received request to start simulation with term: '{search_term}'")
+    print(f"Received request to start simulation with term: '{search_term}' and proxy: '{proxy_server}'")
 
-    # Pass the search term to the simulation function
-    simulation_thread = threading.Thread(target=run_simulation, args=(search_term,))
+    # Pass both arguments to the simulation function
+    simulation_thread = threading.Thread(target=run_simulation, args=(search_term, proxy_server))
     simulation_thread.start()
 
     return f"Simulation started for '{search_term}'!"

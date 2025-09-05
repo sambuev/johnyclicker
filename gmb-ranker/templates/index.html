@@ -51,6 +51,11 @@
                             <input type="text" class="form-control" id="search-term" value="Google My Business">
                             <div class="form-text">The term to search for on Google.</div>
                         </div>
+                        <div class="mb-3">
+                            <label for="proxy-server" class="form-label">Proxy Server</label>
+                            <input type="text" class="form-control" id="proxy-server" placeholder="e.g., http://proxy.example.com:8080">
+                            <div class="form-text">Optional. URL of the HTTP/HTTPS proxy server.</div>
+                        </div>
                         <!-- More configuration options will be added here -->
                     </form>
                 </div>
@@ -83,17 +88,21 @@
     <script>
         document.getElementById('start-simulation-btn').addEventListener('click', () => {
             const searchTerm = document.getElementById('search-term').value;
+            const proxyServer = document.getElementById('proxy-server').value;
 
-            console.log(`Starting simulation with search term: ${searchTerm}`);
+            console.log(`Starting simulation with search term: '${searchTerm}' and proxy: '${proxyServer}'`);
+
+            let payload = {
+                'search_term': searchTerm,
+                'proxy_server': proxyServer
+            };
 
             fetch('/run-simulation', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({
-                    'search_term': searchTerm
-                })
+                body: JSON.stringify(payload)
             })
             .then(response => response.text())
             .then(data => {
