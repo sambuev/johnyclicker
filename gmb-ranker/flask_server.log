@@ -8,5 +8,9 @@
  * Restarting with stat
  * Debugger is active!
  * Debugger PIN: 311-540-975
-127.0.0.1 - - [05/Sep/2025 22:32:28] "GET / HTTP/1.1" 200 -
-127.0.0.1 - - [05/Sep/2025 22:32:29] "POST /run-simulation HTTP/1.1" 200 -
+Received request to start simulation with term: 'Jules' Software Emporium'
+Simulation started for search term: 'Jules' Software Emporium'
+127.0.0.1 - - [05/Sep/2025 22:39:46] "POST /run-simulation HTTP/1.1" 200 -
+Search submitted for 'Jules' Software Emporium'.
+Navigated to search results.
+Simulation finished.

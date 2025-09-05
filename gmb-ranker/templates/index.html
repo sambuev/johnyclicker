@@ -44,8 +44,15 @@
             <div class="tab-pane fade" id="configure-tab-pane" role="tabpanel" aria-labelledby="configure-tab" tabindex="0">
                 <div class="p-3 border border-top-0">
                     <h3>Configuration</h3>
-                    <p>Configure advanced settings here.</p>
-                    <!-- Configuration form will go here -->
+                    <p>Set the parameters for the simulation.</p>
+                    <form id="config-form">
+                        <div class="mb-3">
+                            <label for="search-term" class="form-label">Search Term</label>
+                            <input type="text" class="form-control" id="search-term" value="Google My Business">
+                            <div class="form-text">The term to search for on Google.</div>
+                        </div>
+                        <!-- More configuration options will be added here -->
+                    </form>
                 </div>
             </div>
             <div class="tab-pane fade" id="campaign-tab-pane" role="tabpanel" aria-labelledby="campaign-tab" tabindex="0">
@@ -75,15 +82,27 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         document.getElementById('start-simulation-btn').addEventListener('click', () => {
-            fetch('/run-simulation', { method: 'POST' })
-                .then(response => response.text())
-                .then(data => {
-                    alert(data);
+            const searchTerm = document.getElementById('search-term').value;
+
+            console.log(`Starting simulation with search term: ${searchTerm}`);
+
+            fetch('/run-simulation', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    'search_term': searchTerm
                 })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('Error starting simulation.');
-                });
+            })
+            .then(response => response.text())
+            .then(data => {
+                alert(data);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error starting simulation.');
+            });
         });
     </script>
 </body>

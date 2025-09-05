@@ -1,14 +1,17 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 from playwright.sync_api import sync_playwright
 import threading
 
 app = Flask(__name__)
 
 # Keep the original simulation function
-def run_simulation():
-    # This function is long-running and will block the server.
-    # We will need to run it in a separate thread in the future.
-    print("Simulation started...")
+def run_simulation(search_term=""):
+    """
+    Launches a browser, navigates to Google, and performs a search.
+    Args:
+        search_term (str): The term to search for.
+    """
+    print(f"Simulation started for search term: '{search_term}'")
     try:
         with sync_playwright() as p:
             browser = p.chromium.launch(headless=True, args=['--no-sandbox'])
@@ -17,9 +20,9 @@ def run_simulation():
 
             search_bar = page.query_selector('textarea[name="q"]')
             if search_bar:
-                search_bar.fill("Google My Business")
+                search_bar.fill(search_term)
                 page.press('textarea[name="q"]', 'Enter')
-                print("Search submitted.")
+                print(f"Search submitted for '{search_term}'.")
             else:
                 print("Search bar not found.")
                 browser.close()
@@ -37,16 +40,21 @@ def run_simulation():
 @app.route('/')
 def index():
     """Renders the main dashboard page."""
-    # The template 'index.html' will be created in the next step.
     return render_template('index.html')
 
 @app.route('/run-simulation', methods=['POST'])
 def start_simulation_route():
     """Triggers the simulation in a background thread."""
-    print("Received request to start simulation.")
-    simulation_thread = threading.Thread(target=run_simulation)
+    data = request.get_json()
+    search_term = data.get('search_term', 'Default Search Term')
+
+    print(f"Received request to start simulation with term: '{search_term}'")
+
+    # Pass the search term to the simulation function
+    simulation_thread = threading.Thread(target=run_simulation, args=(search_term,))
     simulation_thread.start()
-    return "Simulation started successfully in the background!"
+
+    return f"Simulation started for '{search_term}'!"
 
 if __name__ == '__main__':
     # Running in debug mode is fine for development.
