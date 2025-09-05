@@ -5,15 +5,17 @@ import threading
 app = Flask(__name__)
 
 # Keep the original simulation function
-def run_simulation(search_term="", proxy_server=None, user_agent=None):
+def run_simulation(search_term="", proxy_server=None, user_agent=None, latitude=None, longitude=None):
     """
     Launches a browser, navigates to Google, and performs a search.
     Args:
         search_term (str): The term to search for.
         proxy_server (str, optional): The URL of the proxy server. Defaults to None.
         user_agent (str, optional): The user agent to use. Defaults to None.
+        latitude (float, optional): The latitude for geolocation spoofing. Defaults to None.
+        longitude (float, optional): The longitude for geolocation spoofing. Defaults to None.
     """
-    print(f"Simulation started for term: '{search_term}', proxy: '{proxy_server}', user_agent: '{user_agent}'")
+    print(f"Simulation started for term: '{search_term}', proxy: '{proxy_server}', user_agent: '{user_agent}', location: ({latitude}, {longitude})")
     try:
         with sync_playwright() as p:
             launch_options = {
@@ -27,10 +29,20 @@ def run_simulation(search_term="", proxy_server=None, user_agent=None):
 
             browser = p.chromium.launch(**launch_options)
 
-            # Create a new browser context with the specified user agent
+            # Create a new browser context with the specified user agent and geolocation
             context_options = {}
             if user_agent:
                 context_options['user_agent'] = user_agent
+
+            if latitude is not None and longitude is not None:
+                # Ensure values are floats
+                try:
+                    lat = float(latitude)
+                    lon = float(longitude)
+                    context_options['geolocation'] = {'latitude': lat, 'longitude': lon}
+                    context_options['permissions'] = ['geolocation']
+                except (ValueError, TypeError):
+                    print(f"Invalid latitude or longitude provided: ({latitude}, {longitude}). Skipping geolocation.")
 
             context = browser.new_context(**context_options)
             page = context.new_page()
@@ -85,12 +97,14 @@ def start_simulation_route():
     data = request.get_json()
     search_term = data.get('search_term', 'Default Search Term')
     proxy_server = data.get('proxy_server', None)
-    user_agent = data.get('user_agent', None) # Get the user agent, default to None
+    user_agent = data.get('user_agent', None)
+    latitude = data.get('latitude', None)
+    longitude = data.get('longitude', None)
 
-    print(f"Received request to start simulation with term: '{search_term}', proxy: '{proxy_server}', user_agent: '{user_agent}'")
+    print(f"Received request to start simulation with term: '{search_term}', proxy: '{proxy_server}', user_agent: '{user_agent}', location: ({latitude}, {longitude})")
 
     # Pass all arguments to the simulation function
-    simulation_thread = threading.Thread(target=run_simulation, args=(search_term, proxy_server, user_agent))
+    simulation_thread = threading.Thread(target=run_simulation, args=(search_term, proxy_server, user_agent, latitude, longitude))
     simulation_thread.start()
 
     return f"Simulation started for '{search_term}'!"

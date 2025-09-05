@@ -66,6 +66,21 @@
                             </select>
                             <div class="form-text">The User Agent to simulate.</div>
                         </div>
+                        <div class="row">
+                            <div class="col">
+                                <div class="mb-3">
+                                    <label for="latitude" class="form-label">Latitude</label>
+                                    <input type="number" step="any" class="form-control" id="latitude" placeholder="e.g., 40.7128">
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="mb-3">
+                                    <label for="longitude" class="form-label">Longitude</label>
+                                    <input type="number" step="any" class="form-control" id="longitude" placeholder="e.g., -74.0060">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-text">Optional. GPS coordinates to spoof.</div>
                         <!-- More configuration options will be added here -->
                     </form>
                 </div>
@@ -100,13 +115,17 @@
             const searchTerm = document.getElementById('search-term').value;
             const proxyServer = document.getElementById('proxy-server').value;
             const userAgent = document.getElementById('user-agent').value;
+            const latitude = document.getElementById('latitude').value;
+            const longitude = document.getElementById('longitude').value;
 
-            console.log(`Starting simulation with search term: '${searchTerm}', proxy: '${proxyServer}', user agent: '${userAgent}'`);
+            console.log(`Starting simulation with search term: '${searchTerm}', proxy: '${proxyServer}', user agent: '${userAgent}', location: (${latitude}, ${longitude})`);
 
             let payload = {
                 'search_term': searchTerm,
                 'proxy_server': proxyServer,
-                'user_agent': userAgent
+                'user_agent': userAgent,
+                'latitude': latitude,
+                'longitude': longitude
             };
 
             fetch('/run-simulation', {
