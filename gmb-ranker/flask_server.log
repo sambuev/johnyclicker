@@ -1,18 +1,16 @@
  * Serving Flask app 'app'
  * Debug mode: on
-[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
- * Running on all addresses (0.0.0.0)
- * Running on http://127.0.0.1:5001
- * Running on http://192.168.0.2:5001
-[33mPress CTRL+C to quit[0m
- * Restarting with stat
- * Debugger is active!
- * Debugger PIN: 311-540-975
-Received request to start simulation with term: 'Final Validation Test', proxy: 'None', user_agent: 'Mozilla/5.0 (Final Validation Environment)', location: (40.7128, -74.006)
-Simulation started for term: 'Final Validation Test', proxy: 'None', user_agent: 'Mozilla/5.0 (Final Validation Environment)', location: (40.7128, -74.006)127.0.0.1 - - [05/Sep/2025 23:31:09] "POST /run-simulation HTTP/1.1" 200 -
-
-Checking for cookie consent button...
-Cookie consent button not found or timed out, continuing...
-Search submitted for 'Final Validation Test'.
-Navigated to search results.
-Simulation finished.
+Received request to start simulation for business: 'Eiffel Tower'
+Simulation started for term: 'Eiffel Tower', business: 'Eiffel Tower'
+Navigated to Google Maps.
+Searched for 'Eiffel Tower' on Google Maps.
+Waiting for search results panel...
+Could not find primary search results container, trying fallback.
+Fallback search results container loaded.
+Searching for business: Eiffel Tower
+Found 4 potential business listings.
+Checking result 1...
+Checking result 2...
+Checking result 3...
+Checking result 4...
+Could not find business 'Eiffel Tower' in the search results.

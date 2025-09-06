@@ -81,6 +81,17 @@
                             </div>
                         </div>
                         <div class="form-text">Optional. GPS coordinates to spoof.</div>
+                        <hr>
+                        <div class="mb-3">
+                            <label for="business-name" class="form-label">Business Name</label>
+                            <input type="text" class="form-control" id="business-name" placeholder="e.g., Eiffel Tower">
+                            <div class="form-text">The exact business name to find and click on in the map results.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="dwell-time" class="form-label">Dwell Time (seconds)</label>
+                            <input type="number" class="form-control" id="dwell-time" value="10">
+                            <div class="form-text">Time to stay on the clicked website link.</div>
+                        </div>
                         <!-- More configuration options will be added here -->
                     </form>
                 </div>
@@ -117,15 +128,19 @@
             const userAgent = document.getElementById('user-agent').value;
             const latitude = document.getElementById('latitude').value;
             const longitude = document.getElementById('longitude').value;
+            const businessName = document.getElementById('business-name').value;
+            const dwellTime = document.getElementById('dwell-time').value;
 
-            console.log(`Starting simulation with search term: '${searchTerm}', proxy: '${proxyServer}', user agent: '${userAgent}', location: (${latitude}, ${longitude})`);
+            console.log(`Starting simulation with search term: '${searchTerm}', business: '${businessName}'`);
 
             let payload = {
                 'search_term': searchTerm,
                 'proxy_server': proxyServer,
                 'user_agent': userAgent,
                 'latitude': latitude,
-                'longitude': longitude
+                'longitude': longitude,
+                'business_name': businessName,
+                'dwell_time': dwellTime
             };
 
             fetch('/run-simulation', {
